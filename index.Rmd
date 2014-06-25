@@ -1,0 +1,440 @@
+---
+title       : A Simple Farm Model for Saskatchewan
+subtitle    : Based on PMP and Simulation 
+author      : Jon Duan
+job         : ECON 595 Agriculture Economics Project
+logo        : uvic_shield.png
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
+url:
+  lib: librariesNew
+  assets: assets
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+ext_widgets : {rCharts: ["libraries/highcharts","libraries/nvd3", "libraries/morris", "libraries/leaflet", "libraries/rickshaw"]}
+---
+<style>
+strong {
+font-weight: bold;
+}
+em {
+font-style: italic;
+}
+</style>
+## Motivation: A Model is Essential for Policy Analysis
+
+### Impact of policies
+ 
+###     Farm's
+<center>  **REVENUE** </center>
+
+###     Prodcution
+<center> **COST**</center>
+
+###     Crop
+<center> **YIELD**</center>
+
+###     Crop
+<center> **PRICE**</center>
+
+
+
+
+---
+## Assumption of the Model
+1. **Cost** is **fixed**
+ - Cost is based on the farmers' operation and the situation of farm or soil. For cerntain area and time period, we assume it fixed. 
+ 
+2. **Yield** is **normally** distributed
+ - Yiled depends on something like weather or other random factors. 
+ 
+3. **Price** following a **stochastic** process.
+ - Price changes frequently, even in short term, like other commodity price.
+
+
+---  
+## Data Source and Description
+
+- Five major crops in SK:  **Wheat, Oats, Barley, Flax, Canola**  
+
+- The **monthly price** data is from **Statistics Canada** [_"Estimated areas, yield, production, average farm price and total farm value of principal field crops, in imperial units, annually 001-0017"_](http://www5.statcan.gc.ca/cansim/a26?lang=eng&retrLang=eng&id=0010017&tabMode=dataTable&srchLan=-1&p1=-1&p2=35).
+
+ * The data covers 1985-12-01 to 2014-03-01
+ 
+- The **annual yield** data is from  **Statistics Canada** [_"Farm product prices, crops and livestock, monthly Description 	002-0043"_](http://www5.statcan.gc.ca/cansim/a05?lang=eng&id=0020043&pattern=0020043&searchTypeByValue=1&p2=35)
+
+ * The data covers 1991 to 2013 
+ 
+- The **cost** per acre data is from **Government of Saskatchewan** [_"Crop Planning Guide"_](http://www.agriculture.gov.sk.ca/crop-planning-guides)
+
+ * The data covers different soil zones, rotations, estimated yield, variable cost, fix cost.  
+
+- The **farm** data from **Statistics Canada** [_The 2011 Census of Agriculture_](http://www.statcan.gc.ca/pub/95-640-x/2012002/prov/47-eng.htm) 
+ 
+ * The data covers Farm numbers, type, size, receipts, area.
+
+
+---
+## A Representative Farm in SK
+- A farm in __black__ soil zone in SK.
+    - Farm size: 1668 acre ( __The 2011 Census of Agriculture__);  
+    - Average price over three years per bussels ( **Statistics Canada** );   
+    - Estimated yield (__"Crop Planning Guide"__);
+    - Variable cost (__"Crop Planning Guide"__).
+    - Land use (**Statistics Canada**)
+
+```{r table1, comment=NA, results='asis',echo=FALSE}
+setwd("E:/Dropbox/book/economics/485/projects/nlfarm/finalcode/slides")
+input<- read.csv("../NLinput.csv", header = TRUE, sep = ",")
+# print table for input
+library(xtable)
+print(xtable(input, caption= "Based on SK data"), type = "html", include.rownames = FALSE)
+```
+
+
+---
+## Soil Zones in SK
+
+<img class=center src=assets/img/Soil_Zones_in_SK.jpg height=572>
+
+---
+## The Cost of Production: PMP Approach
+- Calibration method: **Postive Mathematical Programming**
+- Advantage: 
+    * Minimal __data__ requirement
+    * Calibrate MP models exactly to __observed behaviour__
+    * Optimum: combination of __binding constraints__ and first-order conditions
+    * Policy analysis: __prediction__ of consequences and __sensitivity__ analysis 
+
+- Three stages ( formalized by Howitt (1995a) )
+    * Estimate output __marginal cost__
+    * Estimate __cost function__
+    * Policy analysis
+
+
+
+---
+## Estimate Output Marginal Cost
+- Maximize farmer's __profit__ including a set of __calibration__ constraints.
+
+$$Max: R = \sum_{k=1}^n ( p_k x_k y_k - c_k x_k)$$
+$$Subjet \; to: \sum_{k=1}^n x_k \le 1668 \;\; (1)$$ 
+$$x_k \ge 0$$
+$$x_k \le x_k^{obs} + 0.01,\; \forall k; \; \; [\lambda_k] \;\; (2)$$   
+    
+- $p_k$ is price, $x_k$ is land use, $y_k$ is yield,  $c_k$ is cost.  
+- Where $(1)$ is __nature resource__ constraint (land 1668),
+- $(2)$ is the __calibration__ constraint. Solve the  problem in GAMS $\to$ the associated __shadow price__ $\lambda_k$ for each crop.  
+
+
+
+---
+## Estimate cost function
+- Assumption: a __quadratic__ cost function: $c_k = a x_k + b x_k^2$  for SK.  
+$$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^{obs} - 0.5 \times \hat b_k \times x_k^{obs} $$
+
+```{r table2, comment=NA, results='asis',echo=FALSE}
+shadowad<- read.csv("../shadowad.csv", header = TRUE, sep = ",")
+# print table for shadow price
+library(xtable)
+print(xtable(shadowad, caption= "Based on SK data"), type = "html", include.rownames = FALSE)
+```
+
+- Replace the $c_k x_k$ in the objective functioin $\to$ solve the __revised__ problem in GAMS $\to$ duplicate the observed results $\to$ cost functions for SK are __calibrated__ .
+
+
+
+
+
+---
+## Cost, Yield, and Price
+- Based on these cost functions $a_k x_k - b_k  x_k^2$, if we want to evaluate the impact of policy,need to look at $p_k x_k y_k$
+     - Historial information 
+     - Monte Carlo simulation for the price $p_k$ and yield $y_k$. (Turvey, 2012).
+          $$R_{ij} = P_{ij} Y_{ij} - C_i$$
+          $$Y_{ij} \sim N(E[Y_i], \sigma(Y_i))$$
+          $$P_{ij} = P_{i0} e^{((\mu - \frac{1}{2}) \frac{7}{12} + \sigma N(0,1) \sqrt{\frac{7}{12}})}$$
+          
+- where $C_i$ is the variable cost associated with each crop  
+- $Y_{ij}$ is crop yield generated from a normal distribution  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## Crop Yield History Data in SK (5 Year Mean)
+
+
+```{r table3, echo = FALSE, results = 'asis'}
+
+# recent mean of yield 5 year
+# Read yield data, firs two row are  comment, 
+yield<-read.csv("../yield.csv", skip =2,  header = T, sep = ",")
+# Just take 5 crops and delete 1990 one NA
+yield <- yield[-1, c(1:5,7)]
+# correct names
+names(yield)[c(4,6)]<-c("Flax","Wheat")
+
+#library(xtable)
+yield<-yield[,c("date","Wheat","Oats","Barley","Flax","Canola")]
+
+meanyield <- apply(yield[19:23,-1],2, mean)
+meanyield <- t(as.data.frame(meanyield))
+print(xtable(meanyield), type = "html", include.rownames = T)
+
+```
+
+```{r, echo = FALSE, results = 'hide',message=FALSE}
+require(rCharts)
+```
+
+
+```{r graph2, comment=NA,echo=FALSE,results='asis',message=FALSE}
+
+yld <- transform(yield, date = as.character(date))
+m1 <- mPlot(x = "date", y = c("Wheat","Oats","Barley","Flax","Canola"), type = "Line", data = yld)
+m1$set(pointSize = 1, lineWidth = 2)
+m1$save('assets/img/m1.html', cdn = TRUE)
+cat('<iframe src="assets/img/m1.html" width=100%, height=600></iframe>')
+
+```
+
+
+
+
+
+
+
+
+---
+## Simulation Crop Yield for SK model
+- Since yield data is a time series, in order to find the __$\sigma$__ of yield, we need to detrend the yield data (Coble, 2013).
+ - The easist way to detrend:
+ $$Y_i = \beta_0 + \beta_1 t_i + \beta_2 t_i^2+ \; ... \; +\epsilon_i$$
+ - Run a regression of yield on time using a polynomial form 
+ - Then the predict yield $\hat Y_i$ is time trend
+ - The standard deviation __$\sigma$__ of residual __$\epsilon$__ is what we want
+ - For example, on next page the left graph is time trend for Wheat yield; the right is the residual.
+ 
+
+
+
+
+---
+## Detrand: time trend and Residual
+
+```{r graph3, comment=NA,echo=FALSE, fig.width=14,message=FALSE}
+library(forecast)
+source("decomp.r")
+#
+decomwheat<-decomp(yield[,2], FALSE)
+# set 2 graphs
+par(mfrow=c(1,2))
+
+plot(1991:2013,decomwheat$trend, type="o", ylab= "Time trend",main="Time trend of Wheat yield")
+plot(1991:2013,decomwheat$remainder, type="o", ylab= "Residual", main="Residual of Wheat yield")
+# set back to 1 graph
+par(mfrow=c(1,1))
+
+```
+
+
+
+---
+## 1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation
+
+```{r table5, echo = FALSE, results = 'asis'}
+sdDtrend <- function(x) sd(decomp(x, FALSE)$remainder)
+sdyld <- apply(yield[,-1],2, function(x) sdDtrend(x))
+
+# recent mean of yield 5 year
+meanyld <- apply(yield[19:23,-1],2, mean)
+
+Detrendsd <- sdyld
+
+Detrendsd <- t(as.data.frame(Detrendsd))
+print(xtable(Detrendsd), type = "html", include.rownames = T)
+```
+
+
+
+```{r  graph5, comment=NA,echo=FALSE,message=FALSE,fig.width=14,fig.height=6}
+library(ggplot2)
+
+#simnum=1000
+#crops=5        
+#simYld <- array(0, dim=c(simnum, crops))
+
+## yield random 
+#for (i in 1:simnum) {
+#        simYld[i,] <- rnorm(crops, meanyld, sdyld)
+#}
+#simYld<-as.data.frame(simYld)
+#names(simYld)<-names(yield)[-1]
+
+simYld<-read.csv("../simYld.csv")
+ggplot(simYld, aes(x=1:nrow(simYld))) + geom_line(aes(y = simYld$Wheat, colour = "Wheat")) +  geom_line(aes(y = simYld$Barley, colour = "Barley"))+ geom_line(aes(y = simYld$Oats, colour = "Oats")) + geom_line(aes(y = simYld$Flax, colour = "Flax"))  + geom_line(aes(y = simYld$Canola, colour = "Canola"))+ labs(title="Simulative Yield", x= "State", y="Price") + theme(legend.title=element_blank())                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                                                      
+```
+
+
+
+
+
+
+
+
+
+---
+## Crop Price History Data of SK
+
+
+```{r table4, echo = FALSE, results = 'asis'}
+
+price<- read.csv("../price.csv", header = T, sep = ",")
+
+# set the date format
+price[, 1] <- as.Date(price[, 1], format = "%d/%m/%Y")
+# print table for price
+
+meanprice<- apply(price[265:340,-1],2, mean)
+meanprice <- t(as.data.frame(meanprice))
+print(xtable(meanprice), type = "html", include.rownames = T)
+
+```
+
+
+
+```{r graph4, comment=NA,echo=FALSE,results='asis',message=FALSE}
+
+pr <- transform(price, date = as.character(date))
+m2 <- mPlot(x = "date", y = c("Wheat","Oats","Barley","Flax","Canola"), type = "Line", data = pr)
+m2$set(pointSize = 1, lineWidth = 2)
+m2$save('assets/img/m2.html', cdn = TRUE)
+cat('<iframe src="assets/img/m2.html" width=100%, height=600></iframe>')
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## Price Simulation: Geometric Brownian Model
+
+- Recall
+$$P_{ij} = P_{i0} e^{((\mu - \frac{1}{2}) \frac{7}{12} + \sigma N(0,1) \sqrt{\frac{7}{12}})}$$
+                 
+      - $P_{i0}$ is the initial spring price as of March 2014; 
+      - Price generation is based on a 7-month growing season;
+      - $P_{ij}$ is the random commodity harvest price generated by a log normal (Brownian) process with: 
+       - drift $\mu$, 
+       - volatility $\sigma$, 
+       - random deviate drawn from a normal distribution with zero mean and variance of 1.0;
+
+---
+## Price Simulation: Geometric Brownian Model(Cont.)
+- Geometric Brownian Model follow this equation:
+$$dS_t = \mu S_t dt + \mu S_t dW_t$$
+
+ - $\mu S_t dt$ is **deterministic part**;    $\mu S_t dW_t$ is **stochastic part**.
+
+ - $dW_t$ is the Brownian motion, which follows random normal distributioin $N(0,t)$.
+
+ - $\mu$ is **drift**; $\sigma$ is **diffusion**. $\sigma$ increases the amount of randomness entering the system.
+
+
+```{r table6, comment=NA, echo=FALSE, results='asis'}
+gbmPara<- read.csv("../gbmPara.csv")
+print(xtable(gbmPara,caption="Estimated Mu and Sigma based on historical data in SK",digits=c(0,8,9)), type = "html", include.rownames = TRUE)
+
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## 1000 Crop Price Simulation for SK model
+
+```{r graph6, comment=NA,echo=FALSE, fig.width=14,message=FALSE}
+
+simPr<-read.csv("../simPr.csv")
+
+ggplot(simPr, aes(x=1:nrow(simPr))) + geom_line(aes(y = simPr$Wheat, colour = "Wheat")) +  geom_line(aes(y = simPr$Barley, colour = "Barley"))+ geom_line(aes(y = simPr$Oats, colour = "Oats")) + geom_line(aes(y = simPr$Flax, colour = "Flax")) + geom_line(aes(y = simPr$Canola, colour = "Canola"))+ labs(title="Simulative Price", x= "State", y="Price")+ theme(legend.title=element_blank())
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## Conclusion
+- With the cost, yield, and price data, the SK farm model can be structured as follows:
+
+$$Min: \sigma_p^2 = \frac{1}{m} \sum_{j=1}^m ( \pi_j - E[\pi] )^2$$
+$$Subjet \; to: \sum_{i=1}^n x_k = 1668 \; $$ 
+$$\sum_{i=1}^n E[R_i] x_i = K \; (2)$$
+
+- $\sigma_p^2$ measures the unstability of farmers' income ; $\pi$ is the profit for one state
+- (2) $K$ is the target profit
+- $E[R]$ is expect the average profit per acre
+- $m$ is 1000 simulation state
+
+
+
+---
+## Conclusion
+- The impact of policy can be added to model. For example,whole farm insurance:
+
+$$\sum_{i=1}^n R_{1,i} x_i + Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_1 = 0 $$
+$$\sum_{i=1}^n R_{m,i} x_i + Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_m = 0 $$
+
+- $Z$ is the income coverage level to be protected by insurance such as 70% farmers history income
+- $Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]$ is indemnity payout that farmer can get from insurance
+- $\frac{\sigma}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]$ is permium that farmers need to pay.
+- $\frac{\sigma}{m}$ is subsidy rate. If $\delta$ = 0.50, the premium is subsidized by 50 percent
+
+   
