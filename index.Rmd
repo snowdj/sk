@@ -1,0 +1,70 @@
+---
+title       : Does Whole Farm Insure Matters? 
+subtitle    : Whole Farm Insure and Decision of Production in SK
+author      : Jon Duan
+job         : ECON 595 Agriculture Economics Project
+logo        : uvic_shield.png
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
+url:
+  lib: librariesNew
+  assets: assets
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Whole Farm Insure
+
+1. Stablize the income
+2. Income effect
+3. Distort the production decision
+
+--- .class #id 
+
+## Main Crop in SK
+* Wheat
+
+---
+## Graph and Number of Main Crop in SK
+
+
+
+
+
+---
+## Data and 
+
+
+---
+## Analysis
+
+
+
+
+---
+## PMP
+
+
+---
+## Simlation
+GBM(http://quant.stackexchange.com/questions/4589/how-to-simulate-stock-prices-with-a-geometric-brownian-motion)
+$$dS = \mu S dt + \sigma Sdz$$
+
+to Lemma : Loosely speaking, if a random variable x follows an Ito process : (drift = a(x,t) et variance = b(x,t)2):
+
+$$dx = a(x,t) dt + b(x,t) dz$$
+ Solving the SDE over a single interval will still allow a conditional formula such as:
+$$S_t = S_{t-1} \exp \{ (\mu - \sigma^2/2)\Delta t + \sigma (W_t - W_{t-1})\}$$
+Solution:
+$$S(t) = S(0) \exp{(\mu - \frac{\sigma^{2}}{2})t + B_{t}}$$
+$$S_t = a \exp\left[\left(\mu - \frac{\sigma^2}{2}\right) t + \sigma W_t \right]$$
+where Bt is a brownian motion
+
+---
+## Conclusion
+
+
+
+

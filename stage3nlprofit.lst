@@ -1,0 +1,554 @@
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 1
+Whole Farm Insurance Model
+C o m p i l a t i o n
+
+
+   2  * Following ideas in papers by Calum Turvey, Keith Coble, etc
+   3  * Copyright G. Cornelis van Kooten and Esther Boere
+   4  * Thanks to Richard Howitt
+   5   
+   7   OPTION LIMROW = 0
+   8   OPTION LIMCOL = 0
+   9   OPTION RESLIM = 50000
+  10   OPTION ITERLIM = 1000000
+  11   
+  12  OPTION QCP=CPLEX
+  13  OPTION NLP=MINOS5;
+  14  OPTION DNLP=SNOPT;
+  15  *OPTION DNLP=CONOPT;
+  16  *OPTION DNLP=MINOS5;
+  17   
+  18  SETS  k  PRODUCTION PROCESSES /wheat, barley, oats, flax, canola/
+  19        J  RESOURCE CONSTRAINTS /land/
+  20  *      I  features for crops(PRODUCTION PROCESSES) /cost, pr , yld ,obs /
+  21        s  ITERATIONS IN MONTE CARLO SIMULATION /1*1000/;
+  22  *  See McCarl guide for alias http://www.gams.com/mccarl/mccarlhtml/alias.
+      htm?zoom_highlightsub=alias
+  23  alias(k,kk);
+  24  alias(s,ss);
+  25  *--------------------------------------------------------------------
+  26  SCALAR ratio Proportion of target revenue to employ /1/;
+  27   
+  28  *SCALARS area, elasbar, elaspot /1668, 0.6 , 2.0/;
+  29  *$include scalarsNL.gms
+  30   
+  31  SCALARS elasbar /1.45/;
+  32   
+  33  * See McCarl guide for csv file reading :http://www.gams.com/mccarl/mccarl
+      html/$ondelim_and_$offdelim.htm
+  34   
+  35   
+  36   
+  37  TABLE input(k, *) Input values obs cost yld pr  created in R file
+INCLUDE    E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\NLinput.csv
+  40  ,cost,pr,yld,obs
+  41  wheat,156.46,6.59,47.8,768.948
+  42  barley,147.37,3.77,64,138.6108
+  43  oats,140.59,2.8,99.1,89.0712
+  44  flax,148.14,13.36,23.7,58.8804
+  45  canola,212.59,13.75,39.5,612.4896
+  47  ;
+  48  * -------------- CONTENTS OF INPUT MATRIX CREATED IN R: ------------------
+      -
+  49  * cost - variable cost in $ per acre
+  50  * pr - mean price of the various crops in $ per tonne
+  51  * yld - average yield by crop in tonnes per acre
+  52  * obs - observed hectares in each of the crops with total ha equal 61.05
+  53  * risk - crop-dependent risk parameter
+  54   
+  55  TABLE A(J,k) Unit resource requirements per ha production
+  56        wheat barley oats flax canola
+  57  land   1      1      1   1     1
+  58  *rot    0      0      1     1     1      0      0
+  59  ;
+  60   
+  61  PARAMETER R(J)  RESOURCE CONSTRAINTS
+  62            XB(k) OBSERVED LAND USE in hectares
+  63  ;
+  64      R('land') = sum(k, input(k, 'obs'));
+  65  *    R('rot') = R('land')/3;
+  66      XB(k) = input(k,'obs');
+  67   
+  68  *---------------------------------------------------------------
+  69  * LINEAR PROGRAM  to find out shadow price
+  70  *---------------------------------------------------------------
+  71  VARIABLES  LX(k)    ACRES  PLANTED
+  72             LINPROF  LP PROFIT
+  73   
+  74  POSITIVE VARIABLE LX;
+  75   
+  76  EQUATIONS RESOURCE(J)   CONSTRAINED RESOURCES
+  77            CALIB(k)      CALIBRATION CONSTRAINTS
+  78            LPROFIT       LP OBJECTIVE FUNCTION;
+  79   
+  80  RESOURCE(J)..    SUM(k, A(J,k)*LX(k)) =L= R(J);
+  81   
+  82  CALIB(k)$XB(k)..  LX(k) =L= XB(k) *1.001 ;
+  83   
+  84  LPROFIT..    SUM(k, (input(k,'pr')*input(k,'yld') - input(k,'cost'))*LX(k)
+      ) =E= LINPROF;
+  85   
+  86  MODEL CALIBRATE / ALL /;
+  87  SOLVE CALIBRATE USING LP MAXIMIZING LINPROF;
+  88   
+  89  DISPLAY LX.L, LX.M, RESOURCE.M, CALIB.M ;
+  90  *.l = level or primal variable
+  91  *.m = marginal or dual variable
+  92   
+  93  *--------------------------------------------------------
+  94  PARAMETER
+  95         LAM(k)    PMP DUAL VALUE
+  96         ALPH(k)   INTERCEPT COST
+  97         BETA(k)   COST SLOPE
+  98         ADJ       Adjustment because barley land is not binding
+  99         LAMDA(k)  Revised PMP dual values
+ 100         Target    TARGET REVENUE
+ 101  ;
+ 102   LAM(k) = 0 ;
+ 103  *    $(condition) Appending a $-restriction to any subscript(s) makes the 
+      operation apply only to subscript combinations satisfying the specified co
+      ndition. SEE   http://www.che.boun.edu.tr/Courses/che477/Rardin_Notes-on-G
+      AMS-for-Optimization.htm
+ 104   LAM(k)$LX.L(k) = CALIB.M(k) ;
+ 105  * ADJ = 0;
+ 106  ADJ = input('barley', 'pr')*input('barley', 'yld')/(2*elasbar);
+ 107  * ADJ = input('edible', 'pr')*input('edible', 'yld')/(2*elaspot);
+ 108   LAMDA(k) = LAM(k) + ADJ;
+ 109   ALPH(k) =  input(k,'cost') - LAMDA(k) ;
+ 110  *    $(condition) Appending a $-restriction to any subscript(s) makes the 
+      operation apply only to subscript combinations satisfying the specified co
+      ndition. SEE   http://www.che.boun.edu.tr/Courses/che477/Rardin_Notes-on-G
+      AMS-for-Optimization.htm
+ 111   
+ 112   BETA(k)$LX.L(k) =  2*LAMDA(k) / LX.L(k) ;
+ 113   
+ 114  DISPLAY LAMDA, ALPH,BETA;
+ 115   
+ 116  *
+ 117  * Write shadow prices for calibration constraints
+ 118  *
+ 119  file shade /shadowad.csv/;
+ 120  put shade;
+ 121    put '', ',' , 'LAMDA', ',', 'ALPH', ',', 'BETA' /;
+ 122    loop (k, put k.tl, ',' , LAMDA(k), ',', ALPH(k), ',', BETA(k) /;
+ 123  );
+ 124  putclose shade;
+ 125   
+ 126   
+ 127  *--------------------------------------------------------
+ 128  *   PMP PROGRAM   with adjusted lambda and cost function
+ 129  *--------------------------------------------------------
+ 130  VARIABLES  NX(k)    ACRES  PLANTED TO EACH CROP
+ 131             NLPROF   NLP PROFIT
+ 132   
+ 133  POSITIVE VARIABLE NX;
+ 134   
+ 135  EQUATIONS NRESOURCE(J)  CONSTRAINED RESOURCES
+ 136            NLPROFIT      NLP OBJECTIVE FUNCTION;
+ 137   
+ 138  NRESOURCE(J)..    SUM(k, A(J,k)*NX(k)) =L= R(J);
+ 139   
+ 140  NLPROFIT.. SUM(k, (input(k,'pr')*input(k,'yld') -
+ 141                   (ALPH(k)+0.5*BETA(k)*NX(k)))*NX(k)) =E= NLPROF;
+ 142   
+ 143  MODEL PMP /NRESOURCE, NLPROFIT /;
+ 144  * starting value
+ 145  NX.L(k) = XB(k) * 0.9 ;
+ 146   
+ 147  SOLVE PMP USING NLP MAXIMIZING NLPROF;
+ 148   
+ 149  DISPLAY NX.l, nx.m;
+ 150   
+ 151   
+ 152   
+ 153   
+ 154  *---------------------------------------------------------
+ 155  * PMP no adjustment
+ 156  * Assume TC = m0 x + 0.5 m1 x^2
+ 157   
+ 158  PARAMETERS
+ 159           m1(k) Slope parameter for MC curve
+ 160           m0(k) Intercept parameter for MC curve ;
+ 161   
+ 162           m1(k) = 2*calib.m(k)/input(k,'obs');
+ 163           m0(k) = input(k,'cost') - 0.5*m1(k)*input(k,'obs');
+ 164   
+ 165  VARIABLES
+ 166            rev2 Objective for 2nd stage of PMP;
+ 167  EQUATIONS
+ 168           obj2 Net revenue objective for 2nd stage of PMP;
+ 169           obj2.. rev2 =e= sum(k, input(k,'pr')*input(k,'yld')*nx(k) - m0(k)
+      *nx(k) - 0.5*m1(k)*nx(k)*nx(k));
+ 170   
+ 171  MODEL base /obj2, NRESOURCE/;
+ 172   
+ 173   
+ 174  OPTION QCP= CPLEX;
+ 175   
+ 176  SOLVE base using   QCP maximizing rev2;
+ 177   
+ 178  DISPLAY NX.l, nx.m,calib.m, LAMDA;
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 2
+Whole Farm Insurance Model
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  E:\Dropbox\book\economics\485\projects
+                                          \nlfarm\finalcode\stage3nlprofit.gms
+     2       39 INCLUDE        1      39  .E:\Dropbox\book\economics\485\project
+                                           s\nlfarm\finalcode\NLinput.csv
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 3
+Whole Farm Insurance Model
+Model Statistics    SOLVE CALIBRATE Using LP From line 87
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS            7
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            6
+NON ZERO ELEMENTS            16
+
+
+GENERATION TIME      =        0.078 SECONDS      4 Mb  WIN239-239 Jul  8, 2012
+
+
+EXECUTION TIME       =        0.078 SECONDS      4 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 4
+Whole Farm Insurance Model
+Solution Report     SOLVE CALIBRATE Using LP From line 87
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   CALIBRATE           OBJECTIVE  LINPROF
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  87
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      1 Optimal                   
+**** OBJECTIVE VALUE           359693.4256
+
+ RESOURCE USAGE, LIMIT          0.000     50000.000
+ ITERATION COUNT, LIMIT         1       1000000
+
+IBM ILOG CPLEX   Jul  4, 2012 23.9.1 WIN 33924.33953 VS8 x86/MS Windows
+Cplex 12.4.0.1
+
+LP status(1): optimal
+Optimal solution found.
+Objective :      359693.425602
+
+
+---- EQU RESOURCE  CONSTRAINED RESOURCES
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+land     -INF   1668.000  1668.000    93.910      
+
+---- EQU CALIB  CALIBRATION CONSTRAINTS
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat      -INF    769.717   769.717    64.632      
+barley     -INF    137.081   138.749      .         
+oats       -INF     89.160    89.160    42.980      
+flax       -INF     58.939    58.939    74.582      
+canola     -INF    613.102   613.102   236.625      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU LPROFIT         .         .         .       -1.000      
+
+  LPROFIT  LP OBJECTIVE FUNCTION
+
+---- VAR LX  ACRES  PLANTED
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat       .      769.717     +INF       .         
+barley      .      137.081     +INF       .         
+oats        .       89.160     +INF       .         
+flax        .       58.939     +INF       .         
+canola      .      613.102     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR LINPROF        -INF  3.5969E+5     +INF       .         
+
+  LINPROF  LP PROFIT
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 5
+Whole Farm Insurance Model
+E x e c u t i o n
+
+
+----     89 VARIABLE LX.L  ACRES  PLANTED
+
+wheat  769.717,    barley 137.081,    oats    89.160,    flax    58.939
+canola 613.102
+
+
+----     89 VARIABLE LX.M  ACRES  PLANTED
+
+                      ( ALL       0.000 )
+
+
+----     89 EQUATION RESOURCE.M  CONSTRAINED RESOURCES
+
+land 93.910
+
+
+----     89 EQUATION CALIB.M  CALIBRATION CONSTRAINTS
+
+wheat   64.632,    oats    42.980,    flax    74.582,    canola 236.625
+
+
+----    114 PARAMETER LAMDA  Revised PMP dual values
+
+wheat  147.832,    barley  83.200,    oats   126.180,    flax   157.782
+canola 319.825
+
+
+----    114 PARAMETER ALPH  INTERCEPT COST
+
+wheat     8.628,    barley   64.170,    oats     14.410,    flax     -9.642
+canola -107.235
+
+
+----    114 PARAMETER BETA  COST SLOPE
+
+wheat  0.384,    barley 1.214,    oats   2.830,    flax   5.354,    canola 1.043
+
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 6
+Whole Farm Insurance Model
+Model Statistics    SOLVE PMP Using NLP From line 147
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            2
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            6
+NON ZERO ELEMENTS            11     NON LINEAR N-Z              5
+DERIVATIVE POOL              10     CONSTANT POOL              26
+CODE LENGTH                  27
+
+
+GENERATION TIME      =        0.000 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+
+
+EXECUTION TIME       =        0.015 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 7
+Whole Farm Insurance Model
+Solution Report     SOLVE PMP Using NLP From line 147
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PMP                 OBJECTIVE  NLPROF
+     TYPE    NLP                 DIRECTION  MAXIMIZE
+     SOLVER  MINOS5              FROM LINE  147
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      2 Locally Optimal           
+**** OBJECTIVE VALUE           359693.4256
+
+ RESOURCE USAGE, LIMIT          0.000     50000.000
+ ITERATION COUNT, LIMIT         9       1000000
+ EVALUATION ERRORS              0             0
+
+GAMS/MINOS       Jul  4, 2012 23.9.1 WIN 33924.33953 VS8 x86/MS Windows
+M I N O S  5.51     (Jun 2004)
+
+    GAMS/MINOS 5.51, Large Scale Nonlinear Solver
+    B. A. Murtagh, University of New South Wales
+    P. E. Gill, University of California at San Diego,
+    W. Murray, M. A. Saunders, and M. H. Wright,
+    Systems Optimization Laboratory, Stanford University
+
+ Work space allocated           --    0.77 Mb
+
+ EXIT - Optimal Solution found, objective:        359693.4
+
+
+---- EQU NRESOURCE  CONSTRAINED RESOURCES
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+land     -INF   1668.000  1668.000    10.710      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU NLPROFIT        .         .         .       -1.000      
+
+  NLPROFIT  NLP OBJECTIVE FUNCTION
+
+---- VAR NX  ACRES  PLANTED TO EACH CROP
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat       .      769.717     +INF       .         
+barley      .      137.081     +INF  -3.228E-9      
+oats        .       89.160     +INF  -7.348E-9      
+flax        .       58.939     +INF  -2.115E-8      
+canola      .      613.102     +INF  -8.729E-9      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR NLPROF         -INF  3.5969E+5     +INF       .         
+
+  NLPROF  NLP PROFIT
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 8
+Whole Farm Insurance Model
+E x e c u t i o n
+
+
+----    149 VARIABLE NX.L  ACRES  PLANTED TO EACH CROP
+
+wheat  769.717,    barley 137.081,    oats    89.160,    flax    58.939
+canola 613.102
+
+
+----    149 VARIABLE NX.M  ACRES  PLANTED TO EACH CROP
+
+barley -3.22828E-9,    oats   -7.34775E-9,    flax   -2.11494E-8
+canola -8.72922E-9
+
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/24/14 14:21:42 Page 9
+Whole Farm Insurance Model
+Model Statistics    SOLVE base Using QCP From line 176
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            2
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            6
+NON ZERO ELEMENTS            11     NON LINEAR N-Z              4
+DERIVATIVE POOL              10     CONSTANT POOL              24
+CODE LENGTH                  30
+
+
+GENERATION TIME      =        0.344 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+
+
+EXECUTION TIME       =        0.359 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows            06/24/14 14:21:42 Page 10
+Whole Farm Insurance Model
+Solution Report     SOLVE base Using QCP From line 176
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   base                OBJECTIVE  rev2
+     TYPE    QCP                 DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  176
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      1 Optimal                   
+**** OBJECTIVE VALUE           359490.5769
+
+ RESOURCE USAGE, LIMIT          0.015     50000.000
+ ITERATION COUNT, LIMIT         0       1000000
+ EVALUATION ERRORS              0             0
+
+IBM ILOG CPLEX   Jul  4, 2012 23.9.1 WIN 33924.33953 VS8 x86/MS Windows
+Cplex 12.4.0.1
+
+QP status(1): optimal
+Optimal solution found.
+Objective :      359490.576905
+
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU obj2            .         .         .        1.000      
+
+  obj2  Net revenue objective for 2nd stage of PMP
+
+---- EQU NRESOURCE  CONSTRAINED RESOURCES
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+land     -INF   1668.000  1668.000    93.910      
+
+---- VAR NX  ACRES  PLANTED TO EACH CROP
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat       .      768.948     +INF  -5.606E-7      
+barley      .      138.611     +INF  -3.110E-6      
+oats        .       89.071     +INF  -4.839E-6      
+flax        .       58.880     +INF  -7.321E-6      
+canola      .      612.490     +INF  -7.037E-7      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR rev2           -INF  3.5949E+5     +INF       EPS       
+
+  rev2  Objective for 2nd stage of PMP
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows            06/24/14 14:21:42 Page 11
+Whole Farm Insurance Model
+E x e c u t i o n
+
+
+----    178 VARIABLE NX.L  ACRES  PLANTED TO EACH CROP
+
+wheat  768.948,    barley 138.611,    oats    89.071,    flax    58.880
+canola 612.490
+
+
+----    178 VARIABLE NX.M  ACRES  PLANTED TO EACH CROP
+
+wheat  -5.60556E-7,    barley -3.10970E-6,    oats   -4.83926E-6
+flax   -7.32057E-6,    canola -7.03748E-7
+
+
+----    178 EQUATION CALIB.M  CALIBRATION CONSTRAINTS
+
+wheat   64.632,    oats    42.980,    flax    74.582,    canola 236.625
+
+
+----    178 PARAMETER LAMDA  Revised PMP dual values
+
+wheat  147.832,    barley  83.200,    oats   126.180,    flax   157.782
+canola 319.825
+
+
+**** REPORT FILE SUMMARY
+
+shade E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\shadowad.csv
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+
+
+USER: Gary Goldstein                                 G010614:2121CA-WIN
+      Decision Ware, Inc.                                        DC2807
+
+
+**** FILE SUMMARY
+
+Input      E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\stage3nlprofi
+           t.gms
+Output     E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\stage3nlprofi
+           t.lst

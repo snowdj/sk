@@ -1,0 +1,24 @@
+B 2 C o m p i l a t i o n
+B 122 Include File Summary
+B 136 Equation Listing    SOLVE CALIBRATE Using LP From line 70
+D 137 RESOURCE
+D 144 CALIB
+D 155 LPROFIT
+B 164 Column Listing      SOLVE CALIBRATE Using LP From line 70
+E 165 LX
+E 188 LINPROF
+B 197 Model Statistics    SOLVE CALIBRATE Using LP From line 70
+B 213 Solution Report     SOLVE CALIBRATE Using LP From line 70
+F 241 RESOURCE
+F 247 CALIB
+F 255 LPROFIT
+G 258 LX
+G 268 LINPROF
+B 281 E x e c u t i o n
+I 282 LX
+I 289 LX
+I 294 RESOURCE
+I 299 CALIB
+I 304 LAMDA
+I 310 ALPH
+I 316 BETA

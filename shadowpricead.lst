@@ -1,0 +1,340 @@
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  SETS  k  PRODUCTION PROCESSES /wheat, barley, oats, flax, canola/
+   2        J  RESOURCE CONSTRAINTS /land/
+   3  *      I  features for crops(PRODUCTION PROCESSES) /cost, pr , yld ,obs /
+   4        s  ITERATIONS IN MONTE CARLO SIMULATION /1*1000/;
+   5  *  See McCarl guide for alias http://www.gams.com/mccarl/mccarlhtml/alias.
+      htm?zoom_highlightsub=alias
+   6  alias(k,kk);
+   7  alias(s,ss);
+   8  *--------------------------------------------------------------------
+   9  SCALAR ratio Proportion of target revenue to employ /1/;
+  10   
+  11  *SCALARS area, elasbar, elaspot /1668, 0.6 , 2.0/;
+  12  *$include scalarsNL.gms
+  13   
+  14  SCALARS elasbar /0.6/;
+  15   
+  16  * See McCarl guide for csv file reading :http://www.gams.com/mccarl/mccarl
+      html/$ondelim_and_$offdelim.htm
+  17   
+  18   
+  19   
+  20  TABLE input(k, *) Input values obs cost yld pr  created in R file
+INCLUDE    E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\NLinput.csv
+  23  ,cost,pr,yld,obs
+  24  wheat,156.46,6.59,47.8,768.948
+  25  barley,147.37,3.77,64,138.6108
+  26  oats,140.59,2.8,99.1,89.0712
+  27  flax,148.14,13.36,23.7,58.8804
+  28  canola,212.59,13.75,39.5,612.4896
+  30  ;
+  31  * -------------- CONTENTS OF INPUT MATRIX CREATED IN R: ------------------
+      -
+  32  * cost - variable cost in $ per acre
+  33  * pr - mean price of the various crops in $ per tonne
+  34  * yld - average yield by crop in tonnes per acre
+  35  * obs - observed hectares in each of the crops with total ha equal 61.05
+  36  * risk - crop-dependent risk parameter
+  37   
+  38  TABLE A(J,k) Unit resource requirements per ha production
+  39        wheat barley oats flax canola
+  40  land   1      1      1   1     1
+  41  *rot    0      0      1     1     1      0      0
+  42  ;
+  43   
+  44  PARAMETER R(J)  RESOURCE CONSTRAINTS
+  45            XB(k) OBSERVED LAND USE in hectares
+  46  ;
+  47      R('land') = sum(k, input(k, 'obs'));
+  48  *    R('rot') = R('land')/3;
+  49      XB(k) = input(k,'obs');
+  50   
+  51  *---------------------------------------------------------------
+  52  * LINEAR PROGRAM  to find out shadow price
+  53  *---------------------------------------------------------------
+  54  VARIABLES  LX(k)    ACRES  PLANTED
+  55             LINPROF  LP PROFIT
+  56   
+  57  POSITIVE VARIABLE LX;
+  58   
+  59  EQUATIONS RESOURCE(J)   CONSTRAINED RESOURCES
+  60            CALIB(k)      CALIBRATION CONSTRAINTS
+  61            LPROFIT       LP OBJECTIVE FUNCTION;
+  62   
+  63  RESOURCE(J)..    SUM(k, A(J,k)*LX(k)) =L= R(J);
+  64   
+  65  CALIB(k)$XB(k)..  LX(k) =L= XB(k) *1.001 ;
+  66   
+  67  LPROFIT..    SUM(k, (input(k,'pr')*input(k,'yld') - input(k,'cost'))*LX(k)
+      ) =E= LINPROF;
+  68   
+  69  MODEL CALIBRATE / ALL /;
+  70  SOLVE CALIBRATE USING LP MAXIMIZING LINPROF;
+  71   
+  72  DISPLAY LX.L, LX.M, RESOURCE.M, CALIB.M ;
+  73  *.l = level or primal variable
+  74  *.m = marginal or dual variable
+  75   
+  76  *--------------------------------------------------------
+  77  PARAMETER
+  78         LAM(k)    PMP DUAL VALUE
+  79         ALPH(k)   INTERCEPT COST
+  80         BETA(k)   COST SLOPE
+  81         ADJ       Adjustment because barley land is not binding
+  82         LAMDA(k)  Revised PMP dual values
+  83         Target    TARGET REVENUE
+  84  ;
+  85   LAM(k) = 0 ;
+  86  *    $(condition) Appending a $-restriction to any subscript(s) makes the 
+      operation apply only to subscript combinations satisfying the specified co
+      ndition. SEE   http://www.che.boun.edu.tr/Courses/che477/Rardin_Notes-on-G
+      AMS-for-Optimization.htm
+  87   LAM(k)$LX.L(k) = CALIB.M(k) ;
+  88  * ADJ = 0;
+  89  ADJ = input('barley', 'pr')*input('barley', 'yld')/(2*elasbar);
+  90  * ADJ = input('edible', 'pr')*input('edible', 'yld')/(2*elaspot);
+  91   LAMDA(k) = LAM(k) + ADJ;
+  92   ALPH(k) =  input(k,'cost') - LAMDA(k) ;
+  93  *    $(condition) Appending a $-restriction to any subscript(s) makes the 
+      operation apply only to subscript combinations satisfying the specified co
+      ndition. SEE   http://www.che.boun.edu.tr/Courses/che477/Rardin_Notes-on-G
+      AMS-for-Optimization.htm
+  94   
+  95   BETA(k)$LX.L(k) =  2*LAMDA(k) / LX.L(k) ;
+  96   
+  97  DISPLAY LAMDA, ALPH,BETA;
+  98   
+  99  *
+ 100  * Write shadow prices for calibration constraints
+ 101  *
+ 102  file shade /shadowad.csv/;
+ 103  put shade;
+ 104    put '', ',' , 'LAMDA', ',', 'ALPH', ',', 'BETA' /;
+ 105    loop (k, put k.tl, ',' , LAMDA(k), ',', ALPH(k), ',', BETA(k) /;
+ 106  );
+ 107  putclose shade;
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  E:\Dropbox\book\economics\485\projects
+                                          \nlfarm\finalcode\shadowpricead.gms
+     2       22 INCLUDE        1      22  .E:\Dropbox\book\economics\485\project
+                                           s\nlfarm\finalcode\NLinput.csv
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE CALIBRATE Using LP From line 70
+
+
+---- RESOURCE  =L=  CONSTRAINED RESOURCES
+
+RESOURCE(land)..  LX(wheat) + LX(barley) + LX(oats) + LX(flax) + LX(canola) =L= 
+     1668 ; (LHS = 0)
+     
+
+---- CALIB  =L=  CALIBRATION CONSTRAINTS
+
+CALIB(wheat)..  LX(wheat) =L= 769.716948 ; (LHS = 0)
+     
+CALIB(barley)..  LX(barley) =L= 138.7494108 ; (LHS = 0)
+     
+CALIB(oats)..  LX(oats) =L= 89.1602712 ; (LHS = 0)
+     
+REMAINING 2 ENTRIES SKIPPED
+
+
+---- LPROFIT  =E=  LP OBJECTIVE FUNCTION
+
+LPROFIT..  158.542*LX(wheat) + 93.91*LX(barley) + 136.89*LX(oats)
+     
+      + 168.492*LX(flax) + 330.535*LX(canola) - LINPROF =E= 0 ; (LHS = 0)
+     
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE CALIBRATE Using LP From line 70
+
+
+---- LX  ACRES  PLANTED
+
+LX(wheat)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+        1       RESOURCE(land)
+        1       CALIB(wheat)
+      158.542   LPROFIT
+
+LX(barley)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+        1       RESOURCE(land)
+        1       CALIB(barley)
+       93.91    LPROFIT
+
+LX(oats)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+        1       RESOURCE(land)
+        1       CALIB(oats)
+      136.89    LPROFIT
+
+REMAINING 2 ENTRIES SKIPPED
+
+---- LINPROF  LP PROFIT
+
+LINPROF
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+       -1       LPROFIT
+
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE CALIBRATE Using LP From line 70
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS            7
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            6
+NON ZERO ELEMENTS            16
+
+
+GENERATION TIME      =        0.000 SECONDS      4 Mb  WIN239-239 Jul  8, 2012
+
+
+EXECUTION TIME       =        0.000 SECONDS      4 Mb  WIN239-239 Jul  8, 2012
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE CALIBRATE Using LP From line 70
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   CALIBRATE           OBJECTIVE  LINPROF
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  70
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      1 Optimal                   
+**** OBJECTIVE VALUE           359693.4256
+
+ RESOURCE USAGE, LIMIT          0.000      1000.000
+ ITERATION COUNT, LIMIT         1    2000000000
+
+IBM ILOG CPLEX   Jul  4, 2012 23.9.1 WIN 33924.33953 VS8 x86/MS Windows
+Cplex 12.4.0.1
+
+LP status(1): optimal
+Optimal solution found.
+Objective :      359693.425602
+
+
+---- EQU RESOURCE  CONSTRAINED RESOURCES
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+land     -INF   1668.000  1668.000    93.910      
+
+---- EQU CALIB  CALIBRATION CONSTRAINTS
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat      -INF    769.717   769.717    64.632      
+barley     -INF    137.081   138.749      .         
+oats       -INF     89.160    89.160    42.980      
+flax       -INF     58.939    58.939    74.582      
+canola     -INF    613.102   613.102   236.625      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU LPROFIT         .         .         .       -1.000      
+
+  LPROFIT  LP OBJECTIVE FUNCTION
+
+---- VAR LX  ACRES  PLANTED
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+wheat       .      769.717     +INF       .         
+barley      .      137.081     +INF       .         
+oats        .       89.160     +INF       .         
+flax        .       58.939     +INF       .         
+canola      .      613.102     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR LINPROF        -INF  3.5969E+5     +INF       .         
+
+  LINPROF  LP PROFIT
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS Rev 239  WEX-VS8 23.9.1 x86/MS Windows             06/22/14 18:27:09 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     72 VARIABLE LX.L  ACRES  PLANTED
+
+wheat  769.717,    barley 137.081,    oats    89.160,    flax    58.939
+canola 613.102
+
+
+----     72 VARIABLE LX.M  ACRES  PLANTED
+
+                      ( ALL       0.000 )
+
+
+----     72 EQUATION RESOURCE.M  CONSTRAINED RESOURCES
+
+land 93.910
+
+
+----     72 EQUATION CALIB.M  CALIBRATION CONSTRAINTS
+
+wheat   64.632,    oats    42.980,    flax    74.582,    canola 236.625
+
+
+----     97 PARAMETER LAMDA  Revised PMP dual values
+
+wheat  265.699,    barley 201.067,    oats   244.047,    flax   275.649
+canola 437.692
+
+
+----     97 PARAMETER ALPH  INTERCEPT COST
+
+wheat  -109.239,    barley  -53.697,    oats   -103.457,    flax   -127.509
+canola -225.102
+
+
+----     97 PARAMETER BETA  COST SLOPE
+
+wheat  0.690,    barley 2.934,    oats   5.474,    flax   9.354,    canola 1.428
+
+
+**** REPORT FILE SUMMARY
+
+shade E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\shadowad.csv
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 Mb  WIN239-239 Jul  8, 2012
+
+
+USER: Gary Goldstein                                 G010614:2121CA-WIN
+      Decision Ware, Inc.                                        DC2807
+
+
+**** FILE SUMMARY
+
+Input      E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\shadowpricead
+           .gms
+Output     E:\Dropbox\book\economics\485\projects\nlfarm\finalcode\shadowpricead
+           .lst

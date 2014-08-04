@@ -1,0 +1,294 @@
+SK Model
+========================================================
+
+## data
+I got the monthly price data of crops in Alberta from Statistics Canada, [Farm product prices, crops and livestock, monthly         Description (dollars per metric tonne) 002-0043](http://www5.statcan.gc.ca/cansim/a05?lang=eng&id=0020043&pattern=0020043&searchTypeByValue=1&p2=35).
+
+
+
+```{r table1, comment=NA, results='asis'}
+setwd("E:\\Dropbox\\Github\\sk")
+price<- read.csv("price.csv", header = T, sep = ",")
+
+# set the date format
+price[, 1] <- as.Date(price[, 1], format = "%d/%m/%Y")
+# print table for price
+library(xtable)
+print(xtable(summary(price)), type = "html", include.rownames = F)
+
+```
+
+
+```{r ,echo =FALSE, message=FALSE, results = 'hide'}
+library(reshape)
+#library(plyr)
+#with(melt(price[,-1]), tapply(value, factor(variable), mean))
+# get mean and standard deviation for PMP from recent 6 year
+#str(price)
+meanpr<-apply(price[c(265:340),-1], 2, mean)
+sdpr<-apply(price[c(265:340),-1],2, sd)
+#summary(price)
+```
+Size of Farms The 2011 Census of Agriculture recorded 36 952 Saskatchewan census farms as of May 10, 2011 a decline of 16.6 per cent from 44 329 census farms as at May 15, 2006.
+The total farm land area was recorded at 61.6 million acres â averaging 1 668 acres per farm. In 2006, the average area was 1 449 acres. On average, Saskatchewan has the largest farms in Canada.
+
+### Plot of price
+```{r}
+
+#install.packages("reshape","ggplot2")
+#boxplot(price[c(300:340),-1])
+
+library(ggplot2)
+histpr<-ggplot(data=melt(price[,-1]), aes(as.factor(variable), value, fill=factor(variable)))
+histpr + geom_boxplot() + guides(fill=guide_legend(title=NULL))+labs(title="Boxplot for History Price", x= "Crop", y="Price")
+# line
+
+ggplot(price, aes(price[,1])) + geom_line(aes(y = price[,2], colour = "Wheat")) +  geom_line(aes(y = price[,3], colour = "Barley")) + geom_line(aes(y = price[,4], colour = "Oats")) + geom_line(aes(y = price[,5], colour = "Flax")) + geom_line(aes(y = price[,6], colour = "Calona")) + labs(title="Trend of History Price", x= "Date", y="Price")+ theme(legend.title=element_blank())
+
+```
+
+### Get the yield data.
+
+```{r table2, comment=NA, results='asis'}
+# Read yield data, firs two row are  comment, 
+yield<-read.csv("yield.csv", skip =2,  header = T, sep = ",")
+
+# Just take 5 crops and delete 1990 one NA
+yield <- yield[-1, c(1:5,7)]
+# correct names
+names(yield)[c(4,6)]<-c("Flax","Wheat")
+#names(yield)
+#yield$date<-as.Date(yield$date)
+#library(xtable)
+yield<-yield[,c("date","Wheat","Oats","Barley","Flax","Canola")]
+print(xtable(summary(yield)), type = "html", include.rownames = FALSE)
+#summary(yield)
+head(yield)
+
+```
+
+## Plot of yield
+```{r}
+# boxplot(yield[,-1])
+library(reshape)
+library(ggplot2)
+#library(scales)
+histyldb<-ggplot(data=melt(yield[,-1]), aes(as.factor(variable), value, fill=factor(variable)))
+histyldb + geom_boxplot() + guides(fill=guide_legend(title=NULL))+labs(title="Boxplot for History Yield", x= "Crop", y="yield")
+# line
+histyldl <- ggplot(yield, aes(yield[,1]))
+yldBarley <- geom_line(aes(y = yield[,2], colour = "Barley"))
+yldCanola <- geom_line(aes(y = yield[,3], colour = "Canola"))
+yldFlax<- geom_line(aes(y = yield[,4], colour = "Flax"))
+yldOats<- geom_line(aes(y = yield[,5], colour = "Oats"))
+yldWheat<-geom_line(aes(y = yield[,6], colour = "Wheat"))
+
+histyldl + yldBarley + yldCanola + yldFlax + yldOats+ yldWheat + labs(title="Trend of History yield", x= "Date", y="yield")+ theme(legend.title=element_blank())
+
+```
+
+
+
+## Detrand yield and get varibility (standard deviation) of yield for simulation
+
+```{r ,message =FALSE}
+library(forecast)
+source("decomp.r")
+str(yield)
+sdDtrend <- function(x) sd(decomp(x, FALSE)$remainder)
+
+#sd(decomp(yield$Wheat)$remainder)
+#sd(decomp(yield[,3], FALSE)$remainder)
+   
+sdyld0 <- apply(yield[,-1],2, function(x) sd(x))
+sdyld <- apply(yield[,-1],2, function(x) sdDtrend(x))
+
+# recent mean of yield 5 year
+meanyld <- apply(yield[19:23,-1],2, mean)
+#decomyld<-decomp(yield[,2], FALSE)
+#plot(1991:2013,decomyld$trend, type="o")
+#plot(1991:2013,decomyld$remainder, type="o" )
+
+```
+
+
+
+## yield simulation
+
+
+```{r ,message =FALSE}
+
+
+```
+
+
+
+
+## Yield Simulation
+
+
+```{r ,results='asis'}
+simnum=1000
+crops=5        
+simYld <- array(0, dim=c(simnum, crops))
+
+
+# yield random 
+for (i in 1:simnum) {
+        simYld[i,] <- rnorm(crops, meanyld, sdyld)
+}
+simYld<-as.data.frame(simYld)
+names(simYld)<-names(yield)[-1]
+write.table(simYld,"simYld.csv", col.names = TRUE,row.names = FALSE, sep=",", )
+
+```
+
+
+## PMP
+
+(ALPH(k)+0.5*BETA(k)*NX(k)))*NX(k))
+
+
+## Price simulation 
+
+
+### parameter estimate
+
+
+#### GBM parameter estimate for price motion
+
+```{r}
+library(yuima)
+# set gbm model
+set.seed(12345)
+        
+ymodel <- setModel(drift=c("theta2*x"), diffusion=c("theta1*x"),time.variable="t", state.variable="x", solve.variable="x")
+        
+# initial gbm parament matrix        
+gbmPara<- matrix(ncol=2)
+
+# loop for all parameter
+for(i in 2:ncol(price)){        
+        x <- price[,i]
+        Data2=setYuima(data=setData(x),ymodel)
+        mle1 <- qmle(Data2, start = list(theta1 = 1, theta2 = -0.001),lower = list(theta1=-2, theta2=-1),upper = list(theta1=0.5, theta2=0.5), method = "L-BFGS-B")
+        coef(mle1)
+        gbmPara <- rbind(gbmPara, coef(mle1))
+        }        
+```
+
+
+### Generate all parameter for all crop price
+
+```{r table3, comment=NA, results='asis'}
+# set gbmPara
+gbmPara<-as.data.frame(gbmPara)
+gbmPara<-gbmPara[-1,]
+names(gbmPara)<-c("sigma","mu")
+row.names(gbmPara) <- names(price)[-1]
+# print GBM parameters talbe
+print(xtable(gbmPara), type = "html", include.rownames = FALSE)
+# set mean of price as initial value
+# meanPr<-apply(price[265:340,-1],2,mean)
+# print mean of price talbe
+print(xtable(meanPr), type = "html", include.rownames = FALSE)
+# write to talbe csv
+
+write.table(gbmPara, "gbmPara.csv", col.names = TRUE,row.names = T, sep="," )
+```
+
+
+## simulation of crop price
+
+
+```{r}
+
+# set sampling, model, frequence
+n <- 1000
+ysamp <- setSampling(Terminal=(n)^(1/2), n=n) 
+yuima <- setYuima(model=ymodel, sampling=ysamp)
+
+# set simulative price matrix 1000x
+simPr<-matrix(nrow=n+1)
+# set initial price as March 2014
+initPr<-price[340,-1]
+#meanpr<-apply(price[c(265:340),-1], 2, mean)
+# set loop for 5 crop sim price
+for(j in 1:length(initPr)){
+        dyuima <- simulate(yuima, xinit= as.numeric(initPr[j]), true.parameter=list(theta1=gbmPara[j,1],theta2=gbmPara[j,2]))
+        as.numeric(dyuima@data@ original.data)
+        simPr<-cbind(simPr,as.numeric(dyuima@data@ original.data))
+}
+
+```
+
+
+
+
+
+
+
+### Generate simulation price matrix 1000*5
+
+
+```{r table4, comment=NA, results='asis'}
+# set gsimPr data.frame
+#head(simPr)
+# delete the NA in first column and first row  which is  s0
+simPr<-as.data.frame(simPr[-1,-1])
+names(simPr)<-names(price)[-1]
+
+# print GBM parameters talbe
+print(xtable(head(simPr)), type = "html", include.rownames = FALSE )
+# set mean of price as initial value
+
+write.table(simPr,"simPr.csv", col.names = TRUE,row.names = FALSE, sep=",", )
+
+```
+
+
+### Plot of simulative price
+```{r}
+# library(lattice)
+#install.packages("reshape","ggplot2")
+#boxplot(price[c(300:340),-1])
+#library(reshape)
+library(ggplot2)
+simPrPlot<-ggplot(data=melt(simPr), aes(as.factor(variable), value, fill=factor(variable)))
+simPrPlot + geom_boxplot() + guides(fill=guide_legend(title=NULL))+labs(title="Boxplot for Simulative Price", x= "Crop", y="Price")
+# line
+
+plot.ts(simPr)
+plot.ts(price[,-1])
+reset_index(simPr)
+head(simPr)
+ggplot(simPr, aes(x=1:nrow(simPr))) + geom_line(aes(y = simPr$Wheat, colour = "Wheat")) +  geom_line(aes(y = simPr$Barley, colour = "Barley"))+ geom_line(aes(y = simPr$Oats, colour = "Oats")) + geom_line(aes(y = simPr$Flax, colour = "Flax")) + geom_line(aes(y = simPr$Canola, colour = "Canola"))+ labs(title="Trend of Simulative Price", x= "Date", y="Price")+ theme(legend.title=element_blank())
+
+```
+
+## simulation revenue
+
+```{r}
+
+
+# clean price matrix
+head(simPr)
+str(simPr)
+head(simYld)
+# swap column to match price
+simYld<-simYld[,c("Wheat","Oats","Barley","Flax","Canola")]
+# define the revenue
+simRev<-simPr[1,]*simYld[1,]
+# generate revenue
+for (i in 2:simnum) {        
+	simRev <- rbind(simRev,(simPr[i,]*simYld[i,])) 
+}
+
+write.table(simRev,"simRev.csv", col.names = TRUE,row.names = FALSE, sep=",", )
+
+#head(simRev)
+s#im = sapply(1:simnum, function(x) simPr[x,]*simYld[x,])
+#str(sim)
+```
+
+

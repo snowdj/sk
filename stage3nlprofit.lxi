@@ -1,0 +1,37 @@
+B 2 C o m p i l a t i o n
+B 192 Include File Summary
+B 206 Model Statistics    SOLVE CALIBRATE Using LP From line 87
+B 222 Solution Report     SOLVE CALIBRATE Using LP From line 87
+F 250 RESOURCE
+F 256 CALIB
+F 264 LPROFIT
+G 267 LX
+G 277 LINPROF
+B 290 E x e c u t i o n
+I 291 LX
+I 298 LX
+I 303 RESOURCE
+I 308 CALIB
+I 313 LAMDA
+I 319 ALPH
+I 325 BETA
+B 332 Model Statistics    SOLVE PMP Using NLP From line 147
+B 350 Solution Report     SOLVE PMP Using NLP From line 147
+F 385 NRESOURCE
+F 389 NLPROFIT
+G 392 NX
+G 402 NLPROF
+B 416 E x e c u t i o n
+I 417 NX
+I 424 NX
+B 432 Model Statistics    SOLVE base Using QCP From line 176
+B 450 Solution Report     SOLVE base Using QCP From line 176
+F 477 obj2
+F 485 NRESOURCE
+G 486 NX
+G 496 rev2
+B 510 E x e c u t i o n
+I 511 NX
+I 518 NX
+I 524 CALIB
+I 529 LAMDA
