@@ -86,7 +86,11 @@ font-style: italic;
     - Land use (**Statistics Canada**)
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:29 2014 -->
+=======
+<!-- Wed Jun 25 01:41:50 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> cost </TH> <TH> pr </TH> <TH> yld </TH> <TH> obs </TH>  </TR>
@@ -141,7 +145,11 @@ $$x_k \le x_k^{obs} + 0.01,\; \forall k; \; \; [\lambda_k] \;\; (2)$$
 $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^{obs} - 0.5 \times \hat b_k \times x_k^{obs} $$
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:29 2014 -->
+=======
+<!-- Wed Jun 25 01:41:51 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> LAMDA </TH> <TH> ALPH </TH> <TH> BETA </TH>  </TR>
@@ -190,7 +198,11 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:29 2014 -->
+=======
+<!-- Wed Jun 25 01:41:51 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanyield </TD> <TD align="right"> 39.06 </TD> <TD align="right"> 79.54 </TD> <TD align="right"> 54.94 </TD> <TD align="right"> 22.04 </TD> <TD align="right"> 32.34 </TD> </TR>
@@ -237,7 +249,11 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 ## 1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:37 2014 -->
+=======
+<!-- Wed Jun 25 01:41:59 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> Detrendsd </TD> <TD align="right"> 3.68 </TD> <TD align="right"> 6.42 </TD> <TD align="right"> 6.88 </TD> <TD align="right"> 1.96 </TD> <TD align="right"> 3.51 </TD> </TR>
@@ -262,7 +278,11 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:39 2014 -->
+=======
+<!-- Wed Jun 25 01:42:02 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanprice </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 13.37 </TD> <TD align="right"> 13.75 </TD> </TR>
@@ -312,7 +332,11 @@ $$dS_t = \mu S_t dt + \mu S_t dW_t$$
 
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+<<<<<<< HEAD
 <!-- Wed Jun 25 00:35:40 2014 -->
+=======
+<!-- Wed Jun 25 01:42:03 2014 -->
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Estimated Mu and Sigma based on historical data in SK </CAPTION>
 <TR> <TH>  </TH> <TH> sigma </TH> <TH> mu </TH>  </TR>
