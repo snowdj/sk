@@ -113,44 +113,15 @@ print(xtable(input, caption= "Based on SK data"), type = "html", include.rowname
     * Estimate output __marginal cost__
     * Estimate __cost function__
     * Policy analysis
-<<<<<<< HEAD
->>>>>>> d2eb8b8d1eb13e2944dead8cc1352b8c3fd3b586
+
+
+
+
 
 
 
 ---
-<<<<<<< HEAD
-## PMP
 
-
----
-## Simlation
-GBM(http://quant.stackexchange.com/questions/4589/how-to-simulate-stock-prices-with-a-geometric-brownian-motion)
-$$dS = \mu S dt + \sigma Sdz$$
-
-to Lemma : Loosely speaking, if a random variable x follows an Ito process : (drift = a(x,t) et variance = b(x,t)2):
-
-$$dx = a(x,t) dt + b(x,t) dz$$
- Solving the SDE over a single interval will still allow a conditional formula such as:
-$$S_t = S_{t-1} \exp \{ (\mu - \sigma^2/2)\Delta t + \sigma (W_t - W_{t-1})\}$$
-Solution:
-$$S(t) = S(0) \exp{(\mu - \frac{\sigma^{2}}{2})t + B_{t}}$$
-$$S_t = a \exp\left[\left(\mu - \frac{\sigma^2}{2}\right) t + \sigma W_t \right]$$
-where Bt is a brownian motion
-
----
-## Conclusion
-
-
-
-
-=======
-=======
-
-
-
----
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 ## Estimate Output Marginal Cost
 - Maximize farmer's __profit__ including a set of __calibration__ constraints.
 

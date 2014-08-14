@@ -87,7 +87,7 @@ font-style: italic;
     - Land use (**Statistics Canada**)
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:11 2014 -->
+<!-- Thu Aug 14 00:29:12 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> cost </TH> <TH> pr </TH> <TH> yld </TH> <TH> obs </TH>  </TR>
@@ -117,44 +117,15 @@ font-style: italic;
     * Estimate output __marginal cost__
     * Estimate __cost function__
     * Policy analysis
-<<<<<<< HEAD
->>>>>>> d2eb8b8d1eb13e2944dead8cc1352b8c3fd3b586
+
+
+
+
 
 
 
 ---
-<<<<<<< HEAD
-## PMP
 
-
----
-## Simlation
-GBM(http://quant.stackexchange.com/questions/4589/how-to-simulate-stock-prices-with-a-geometric-brownian-motion)
-$$dS = \mu S dt + \sigma Sdz$$
-
-to Lemma : Loosely speaking, if a random variable x follows an Ito process : (drift = a(x,t) et variance = b(x,t)2):
-
-$$dx = a(x,t) dt + b(x,t) dz$$
- Solving the SDE over a single interval will still allow a conditional formula such as:
-$$S_t = S_{t-1} \exp \{ (\mu - \sigma^2/2)\Delta t + \sigma (W_t - W_{t-1})\}$$
-Solution:
-$$S(t) = S(0) \exp{(\mu - \frac{\sigma^{2}}{2})t + B_{t}}$$
-$$S_t = a \exp\left[\left(\mu - \frac{\sigma^2}{2}\right) t + \sigma W_t \right]$$
-where Bt is a brownian motion
-
----
-## Conclusion
-
-
-
-
-=======
-=======
-
-
-
----
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 ## Estimate Output Marginal Cost
 - Maximize farmer's __profit__ including a set of __calibration__ constraints.
 
@@ -184,7 +155,7 @@ Error: cannot open the connection
 ```
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:11 2014 -->
+<!-- Thu Aug 14 00:29:12 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> LAMDA </TH> <TH> ALPH </TH> <TH> BETA </TH>  </TR>
@@ -249,7 +220,7 @@ Error: cannot open the connection
 ```
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:11 2014 -->
+<!-- Thu Aug 14 00:29:12 2014 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
   <TR> <TD align="right"> meanyield </TD> <TD align="right"> 39.06 </TD> <TD align="right"> 79.54 </TD> <TD align="right"> 54.94 </TD> <TD align="right"> 22.04 </TD> <TD align="right"> 32.34 </TD> </TR>
@@ -292,7 +263,7 @@ Error: cannot open the connection
 ## 1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:14 2014 -->
+<!-- Thu Aug 14 00:29:18 2014 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
   <TR> <TD align="right"> Detrendsd </TD> <TD align="right"> 3.68 </TD> <TD align="right"> 6.42 </TD> <TD align="right"> 6.88 </TD> <TD align="right"> 1.96 </TD> <TD align="right"> 3.51 </TD> </TR>
@@ -333,7 +304,7 @@ Error: cannot open the connection
 ```
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:16 2014 -->
+<!-- Thu Aug 14 00:29:20 2014 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanprice </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 13.37 </TD> <TD align="right"> 13.75 </TD> </TR>
@@ -390,7 +361,7 @@ Error: cannot open the connection
 ```
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Wed Aug 13 23:46:16 2014 -->
+<!-- Thu Aug 14 00:29:21 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Estimated Mu and Sigma based on historical data in SK </CAPTION>
 <TR> <TH>  </TH> <TH> sigma </TH> <TH> mu </TH>  </TR>
