@@ -15,6 +15,7 @@ mode        : selfcontained # {standalone, draft}
 knit        : slidify::knit2slides
 ext_widgets : {rCharts: ["libraries/highcharts","libraries/nvd3", "libraries/morris", "libraries/leaflet", "libraries/rickshaw"]}
 ---
+
 <style>
 strong {
 font-weight: bold;
@@ -86,11 +87,7 @@ font-style: italic;
     - Land use (**Statistics Canada**)
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:29 2014 -->
-=======
-<!-- Wed Jun 25 01:41:50 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:11 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> cost </TH> <TH> pr </TH> <TH> yld </TH> <TH> obs </TH>  </TR>
@@ -100,7 +97,6 @@ font-style: italic;
   <TR> <TD> flax </TD> <TD align="right"> 148.14 </TD> <TD align="right"> 13.36 </TD> <TD align="right"> 23.70 </TD> <TD align="right"> 58.88 </TD> </TR>
   <TR> <TD> canola </TD> <TD align="right"> 212.59 </TD> <TD align="right"> 13.75 </TD> <TD align="right"> 39.50 </TD> <TD align="right"> 612.49 </TD> </TR>
    </TABLE>
-
 
 
 ---
@@ -121,10 +117,44 @@ font-style: italic;
     * Estimate output __marginal cost__
     * Estimate __cost function__
     * Policy analysis
+<<<<<<< HEAD
+>>>>>>> d2eb8b8d1eb13e2944dead8cc1352b8c3fd3b586
 
 
 
 ---
+<<<<<<< HEAD
+## PMP
+
+
+---
+## Simlation
+GBM(http://quant.stackexchange.com/questions/4589/how-to-simulate-stock-prices-with-a-geometric-brownian-motion)
+$$dS = \mu S dt + \sigma Sdz$$
+
+to Lemma : Loosely speaking, if a random variable x follows an Ito process : (drift = a(x,t) et variance = b(x,t)2):
+
+$$dx = a(x,t) dt + b(x,t) dz$$
+ Solving the SDE over a single interval will still allow a conditional formula such as:
+$$S_t = S_{t-1} \exp \{ (\mu - \sigma^2/2)\Delta t + \sigma (W_t - W_{t-1})\}$$
+Solution:
+$$S(t) = S(0) \exp{(\mu - \frac{\sigma^{2}}{2})t + B_{t}}$$
+$$S_t = a \exp\left[\left(\mu - \frac{\sigma^2}{2}\right) t + \sigma W_t \right]$$
+where Bt is a brownian motion
+
+---
+## Conclusion
+
+
+
+
+=======
+=======
+
+
+
+---
+>>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
 ## Estimate Output Marginal Cost
 - Maximize farmer's __profit__ including a set of __calibration__ constraints.
 
@@ -144,12 +174,17 @@ $$x_k \le x_k^{obs} + 0.01,\; \forall k; \; \; [\lambda_k] \;\; (2)$$
 - Assumption: a __quadratic__ cost function: $c_k = a x_k + b x_k^2$  for SK.  
 $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^{obs} - 0.5 \times \hat b_k \times x_k^{obs} $$
 
+
+```
+Warning: cannot open file '../shadowad.csv': No such file or directory
+```
+
+```
+Error: cannot open the connection
+```
+
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:29 2014 -->
-=======
-<!-- Wed Jun 25 01:41:51 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:11 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> LAMDA </TH> <TH> ALPH </TH> <TH> BETA </TH>  </TR>
@@ -159,7 +194,6 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
   <TR> <TD> flax         </TD> <TD align="right"> 157.78 </TD> <TD align="right"> -9.64 </TD> <TD align="right"> 5.35 </TD> </TR>
   <TR> <TD> canola       </TD> <TD align="right"> 319.83 </TD> <TD align="right"> -107.23 </TD> <TD align="right"> 1.04 </TD> </TR>
    </TABLE>
-
 
 - Replace the $c_k x_k$ in the objective functioin $\to$ solve the __revised__ problem in GAMS $\to$ duplicate the observed results $\to$ cost functions for SK are __calibrated__ .
 
@@ -197,24 +231,34 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 ## Crop Yield History Data in SK (5 Year Mean)
 
 
+
+```
+## Warning: cannot open file '../yield.csv': No such file or directory
+```
+
+```
+## Error: cannot open the connection
+```
+
+```
+## Error: undefined columns selected
+```
+
+```
+## Error: undefined columns selected
+```
+
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:29 2014 -->
-=======
-<!-- Wed Jun 25 01:41:51 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:11 2014 -->
 <TABLE border=1>
-<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
   <TR> <TD align="right"> meanyield </TD> <TD align="right"> 39.06 </TD> <TD align="right"> 79.54 </TD> <TD align="right"> 54.94 </TD> <TD align="right"> 22.04 </TD> <TD align="right"> 32.34 </TD> </TR>
    </TABLE>
 
 
 
 
-
-
 <iframe src="assets/img/m1.html" width=100%, height=600></iframe>
-
 
 
 
@@ -244,26 +288,28 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 
 
 
-
 ---
 ## 1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:37 2014 -->
-=======
-<!-- Wed Jun 25 01:41:59 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:14 2014 -->
 <TABLE border=1>
-<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
   <TR> <TD align="right"> Detrendsd </TD> <TD align="right"> 3.68 </TD> <TD align="right"> 6.42 </TD> <TD align="right"> 6.88 </TD> <TD align="right"> 1.96 </TD> <TD align="right"> 3.51 </TD> </TR>
    </TABLE>
 
 
 
 
-![plot of chunk graph5](figure/graph5.png) 
+```
+Warning: cannot open file '../simYld.csv': No such file or directory
+```
 
+```
+Error: cannot open the connection
+```
+
+![plot of chunk graph5](figure/graph5.png) 
 
 
 
@@ -277,12 +323,17 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 ## Crop Price History Data of SK
 
 
+
+```
+## Warning: cannot open file '../price.csv': No such file or directory
+```
+
+```
+## Error: cannot open the connection
+```
+
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:39 2014 -->
-=======
-<!-- Wed Jun 25 01:42:02 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:16 2014 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanprice </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 13.37 </TD> <TD align="right"> 13.75 </TD> </TR>
@@ -290,9 +341,7 @@ $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^
 
 
 
-
 <iframe src="assets/img/m2.html" width=100%, height=600></iframe>
-
 
 
 
@@ -331,12 +380,17 @@ $$dS_t = \mu S_t dt + \mu S_t dW_t$$
  - $\mu$ is **drift**; $\sigma$ is **diffusion**. $\sigma$ increases the amount of randomness entering the system.
 
 
+
+```
+Warning: cannot open file '../gbmPara.csv': No such file or directory
+```
+
+```
+Error: cannot open the connection
+```
+
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<<<<<<< HEAD
-<!-- Wed Jun 25 00:35:40 2014 -->
-=======
-<!-- Wed Jun 25 01:42:03 2014 -->
->>>>>>> 37757b9c69b63b2a9d4e6dd342f12b778686a990
+<!-- Wed Aug 13 23:46:16 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Estimated Mu and Sigma based on historical data in SK </CAPTION>
 <TR> <TH>  </TH> <TH> sigma </TH> <TH> mu </TH>  </TR>
@@ -361,12 +415,19 @@ $$dS_t = \mu S_t dt + \mu S_t dW_t$$
 
 
 
-
 ---
 ## 1000 Crop Price Simulation for SK model
 
-![plot of chunk graph6](figure/graph6.png) 
 
+```
+Warning: cannot open file '../simPr.csv': No such file or directory
+```
+
+```
+Error: cannot open the connection
+```
+
+![plot of chunk graph6](figure/graph6.png) 
 
 
 
@@ -409,3 +470,4 @@ $$\sum_{i=1}^n R_{m,i} x_i + Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]- \frac{\del
 - $\frac{\sigma}{m}$ is subsidy rate. If $\delta$ = 0.50, the premium is subsidized by 50 percent
 
    
+

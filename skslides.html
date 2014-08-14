@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A Simple Farm Model for Saskatchewan</title>
+  <meta charset="utf-8">
+  <meta name="description" content="A Simple Farm Model for Saskatchewan">
+  <meta name="author" content="Jon Duan">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="librariesNew/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="librariesNew/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="librariesNew/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="librariesNew/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="librariesNew/widgets/nvd3/css/nv.d3.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/nvd3/css/rNVD3.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/morris/css/morris.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/leaflet/external/leaflet.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/leaflet/external/leaflet-rCharts.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/leaflet/external/legend.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/rickshaw/css/rickshaw.min.css"></link>
+<link rel=stylesheet href="librariesNew/widgets/rickshaw/css/jquery-ui.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="librariesNew/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="librariesNew/frameworks/io2012/js/slides" 
+    src="librariesNew/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  <script src="librariesNew/widgets/highcharts/js/jquery-1.9.1.min.js"></script>
+<script src="librariesNew/widgets/highcharts/js/highcharts.js"></script>
+<script src="librariesNew/widgets/highcharts/js/highcharts-more.js"></script>
+<script src="librariesNew/widgets/highcharts/js/exporting.js"></script>
+<script src="librariesNew/widgets/nvd3/js/jquery-1.8.2.min.js"></script>
+<script src="librariesNew/widgets/nvd3/js/d3.v3.min.js"></script>
+<script src="librariesNew/widgets/nvd3/js/nv.d3.min-new.js"></script>
+<script src="librariesNew/widgets/nvd3/js/fisheye.js"></script>
+<script src="librariesNew/widgets/morris/js/raphael-2.1.0.min.js"></script>
+<script src="librariesNew/widgets/morris/js/morris.min.js"></script>
+<script src="librariesNew/widgets/leaflet/external/leaflet.js"></script>
+<script src="librariesNew/widgets/leaflet/external/leaflet-providers.js"></script>
+<script src="librariesNew/widgets/leaflet/external/Control.FullScreen.js"></script>
+<script src="librariesNew/widgets/rickshaw/js/d3.v2.min.js"></script>
+<script src="librariesNew/widgets/rickshaw/js/rickshaw.min.js"></script>
+<script src="librariesNew/widgets/rickshaw/js/jquery.min.js"></script>
+<script src="librariesNew/widgets/rickshaw/js/jquery-ui.min.js"></script>
+
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/uvic_shield.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>A Simple Farm Model for Saskatchewan</h1>
+    <h2>Based on PMP and Simulation</h2>
+    <p>Jon Duan<br/>ECON 595 Agriculture Economics Project</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <article data-timings="">
+    <style>
+strong {
+font-weight: bold;
+}
+em {
+font-style: italic;
+}
+</style>
+
+<h2>Motivation: A Model is Essential for Policy Analysis</h2>
+
+<h3>Impact of policies</h3>
+
+<h3>Farm&#39;s</h3>
+
+<p><center>  <strong>REVENUE</strong> </center></p>
+
+<h3>Prodcution</h3>
+
+<p><center> <strong>COST</strong></center></p>
+
+<h3>Crop</h3>
+
+<p><center> <strong>YIELD</strong></center></p>
+
+<h3>Crop</h3>
+
+<p><center> <strong>PRICE</strong></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Assumption of the Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p><strong>Cost</strong> is <strong>fixed</strong></p>
+
+<ul>
+<li>Cost is based on the farmers&#39; operation and the situation of farm or soil. For cerntain area and time period, we assume it fixed. </li>
+</ul></li>
+<li><p><strong>Yield</strong> is <strong>normally</strong> distributed</p>
+
+<ul>
+<li>Yiled depends on something like weather or other random factors. </li>
+</ul></li>
+<li><p><strong>Price</strong> following a <strong>stochastic</strong> process.</p>
+
+<ul>
+<li>Price changes frequently, even in short term, like other commodity price.</li>
+</ul></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Data Source and Description</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Five major crops in SK:  <strong>Wheat, Oats, Barley, Flax, Canola</strong>  </p></li>
+<li><p>The <strong>monthly price</strong> data is from <strong>Statistics Canada</strong> <a href="http://www5.statcan.gc.ca/cansim/a26?lang=eng&amp;retrLang=eng&amp;id=0010017&amp;tabMode=dataTable&amp;srchLan=-1&amp;p1=-1&amp;p2=35"><em>&quot;Estimated areas, yield, production, average farm price and total farm value of principal field crops, in imperial units, annually 001-0017&quot;</em></a>.</p>
+
+<ul>
+<li>The data covers 1985-12-01 to 2014-03-01</li>
+</ul></li>
+<li><p>The <strong>annual yield</strong> data is from  <strong>Statistics Canada</strong> <a href="http://www5.statcan.gc.ca/cansim/a05?lang=eng&amp;id=0020043&amp;pattern=0020043&amp;searchTypeByValue=1&amp;p2=35"><em>&quot;Farm product prices, crops and livestock, monthly Description     002-0043&quot;</em></a></p>
+
+<ul>
+<li>The data covers 1991 to 2013 </li>
+</ul></li>
+<li><p>The <strong>cost</strong> per acre data is from <strong>Government of Saskatchewan</strong> <a href="http://www.agriculture.gov.sk.ca/crop-planning-guides"><em>&quot;Crop Planning Guide&quot;</em></a></p>
+
+<ul>
+<li>The data covers different soil zones, rotations, estimated yield, variable cost, fix cost.<br></li>
+</ul></li>
+<li><p>The <strong>farm</strong> data from <strong>Statistics Canada</strong> <a href="http://www.statcan.gc.ca/pub/95-640-x/2012002/prov/47-eng.htm"><em>The 2011 Census of Agriculture</em></a> </p>
+
+<ul>
+<li>The data covers Farm numbers, type, size, receipts, area.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>A Representative Farm in SK</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>A farm in <strong>black</strong> soil zone in SK.
+
+<ul>
+<li>Farm size: 1668 acre ( <strong>The 2011 Census of Agriculture</strong>);<br></li>
+<li>Average price over three years per bussels ( <strong>Statistics Canada</strong> );<br></li>
+<li>Estimated yield (<strong>&quot;Crop Planning Guide&quot;</strong>);</li>
+<li>Variable cost (<strong>&quot;Crop Planning Guide&quot;</strong>).</li>
+<li>Land use (<strong>Statistics Canada</strong>)</li>
+</ul></li>
+</ul>
+
+<!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:54:08 2014 -->
+
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
+<TR> <TH> X </TH> <TH> cost </TH> <TH> pr </TH> <TH> yld </TH> <TH> obs </TH>  </TR>
+  <TR> <TD> wheat </TD> <TD align="right"> 156.46 </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 47.80 </TD> <TD align="right"> 768.95 </TD> </TR>
+  <TR> <TD> barley </TD> <TD align="right"> 147.37 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 64.00 </TD> <TD align="right"> 138.61 </TD> </TR>
+  <TR> <TD> oats </TD> <TD align="right"> 140.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 99.10 </TD> <TD align="right"> 89.07 </TD> </TR>
+  <TR> <TD> flax </TD> <TD align="right"> 148.14 </TD> <TD align="right"> 13.36 </TD> <TD align="right"> 23.70 </TD> <TD align="right"> 58.88 </TD> </TR>
+  <TR> <TD> canola </TD> <TD align="right"> 212.59 </TD> <TD align="right"> 13.75 </TD> <TD align="right"> 39.50 </TD> <TD align="right"> 612.49 </TD> </TR>
+   </TABLE>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Soil Zones in SK</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img class=center src=assets/img/Soil_Zones_in_SK.jpg height=572></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>The Cost of Production: PMP Approach</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Calibration method: <strong>Postive Mathematical Programming</strong></li>
+<li><p>Advantage: </p>
+
+<ul>
+<li>Minimal <strong>data</strong> requirement</li>
+<li>Calibrate MP models exactly to <strong>observed behaviour</strong></li>
+<li>Optimum: combination of <strong>binding constraints</strong> and first-order conditions</li>
+<li>Policy analysis: <strong>prediction</strong> of consequences and <strong>sensitivity</strong> analysis </li>
+</ul></li>
+<li><p>Three stages ( formalized by Howitt (1995a) )</p>
+
+<ul>
+<li>Estimate output <strong>marginal cost</strong></li>
+<li>Estimate <strong>cost function</strong></li>
+<li>Policy analysis</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Estimate Output Marginal Cost</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Maximize farmer&#39;s <strong>profit</strong> including a set of <strong>calibration</strong> constraints.</li>
+</ul>
+
+<p>\[Max: R = \sum_{k=1}^n ( p_k x_k y_k - c_k x_k)\]
+\[Subjet \; to: \sum_{k=1}^n x_k \le 1668 \;\; (1)\] 
+\[x_k \ge 0\]
+\[x_k \le x_k^{obs} + 0.01,\; \forall k; \; \; [\lambda_k] \;\; (2)\]   </p>
+
+<ul>
+<li>\(p_k\) is price, \(x_k\) is land use, \(y_k\) is yield,  \(c_k\) is cost.<br></li>
+<li>Where \((1)\) is <strong>nature resource</strong> constraint (land 1668),</li>
+<li>\((2)\) is the <strong>calibration</strong> constraint. Solve the  problem in GAMS \(\to\) the associated <strong>shadow price</strong> \(\lambda_k\) for each crop.<br></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Estimate cost function</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Assumption: a <strong>quadratic</strong> cost function: \(c_k = a x_k + b x_k^2\)  for SK.<br>
+\[\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^{obs} - 0.5 \times \hat b_k \times x_k^{obs} \]</li>
+</ul>
+
+<!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:54:11 2014 -->
+
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
+<TR> <TH> X </TH> <TH> LAMDA </TH> <TH> ALPH </TH> <TH> BETA </TH>  </TR>
+  <TR> <TD> wheat        </TD> <TD align="right"> 147.83 </TD> <TD align="right"> 8.63 </TD> <TD align="right"> 0.38 </TD> </TR>
+  <TR> <TD> barley       </TD> <TD align="right"> 83.20 </TD> <TD align="right"> 64.17 </TD> <TD align="right"> 1.21 </TD> </TR>
+  <TR> <TD> oats         </TD> <TD align="right"> 126.18 </TD> <TD align="right"> 14.41 </TD> <TD align="right"> 2.83 </TD> </TR>
+  <TR> <TD> flax         </TD> <TD align="right"> 157.78 </TD> <TD align="right"> -9.64 </TD> <TD align="right"> 5.35 </TD> </TR>
+  <TR> <TD> canola       </TD> <TD align="right"> 319.83 </TD> <TD align="right"> -107.23 </TD> <TD align="right"> 1.04 </TD> </TR>
+   </TABLE>
+
+<ul>
+<li>Replace the \(c_k x_k\) in the objective functioin \(\to\) solve the <strong>revised</strong> problem in GAMS \(\to\) duplicate the observed results \(\to\) cost functions for SK are <strong>calibrated</strong> .</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Cost, Yield, and Price</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Based on these cost functions \(a_k x_k - b_k  x_k^2\), if we want to evaluate the impact of policy,need to look at \(p_k x_k y_k\)</p>
+
+<ul>
+<li>Historial information </li>
+<li>Monte Carlo simulation for the price \(p_k\) and yield \(y_k\). (Turvey, 2012).
+  \[R_{ij} = P_{ij} Y_{ij} - C_i\]
+  \[Y_{ij} \sim N(E[Y_i], \sigma(Y_i))\]
+  \[P_{ij} = P_{i0} e^{((\mu - \frac{1}{2}) \frac{7}{12} + \sigma N(0,1) \sqrt{\frac{7}{12}})}\]</li>
+</ul></li>
+<li><p>where \(C_i\) is the variable cost associated with each crop  </p></li>
+<li><p>\(Y_{ij}\) is crop yield generated from a normal distribution  </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Crop Yield History Data in SK (5 Year Mean)</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:54:12 2014 -->
+
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
+  <TR> <TD align="right"> meanyield </TD> <TD align="right"> 39.06 </TD> <TD align="right"> 79.54 </TD> <TD align="right"> 54.94 </TD> <TD align="right"> 22.04 </TD> <TD align="right"> 32.34 </TD> </TR>
+   </TABLE>
+
+<iframe src="assets/img/m1.html" width=100%, height=600></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Simulation Crop Yield for SK model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Since yield data is a time series, in order to find the <strong>\(\sigma\)</strong> of yield, we need to detrend the yield data (Coble, 2013).
+
+<ul>
+<li>The easist way to detrend:
+\[Y_i = \beta_0 + \beta_1 t_i + \beta_2 t_i^2+ \; ... \; +\epsilon_i\]</li>
+<li>Run a regression of yield on time using a polynomial form </li>
+<li>Then the predict yield \(\hat Y_i\) is time trend</li>
+<li>The standard deviation <strong>\(\sigma\)</strong> of residual <strong>\(\epsilon\)</strong> is what we want</li>
+<li>For example, on next page the left graph is time trend for Wheat yield; the right is the residual.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Detrand: time trend and Residual</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/graph3.png" alt="plot of chunk graph3"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:54:30 2014 -->
+
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
+  <TR> <TD align="right"> Detrendsd </TD> <TD align="right"> 3.68 </TD> <TD align="right"> 6.42 </TD> <TD align="right"> 6.88 </TD> <TD align="right"> 1.96 </TD> <TD align="right"> 3.51 </TD> </TR>
+   </TABLE>
+
+<p><img src="assets/fig/graph5.png" alt="plot of chunk graph5"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Crop Price History Data of SK</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:55:52 2014 -->
+
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
+  <TR> <TD align="right"> meanprice </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 13.37 </TD> <TD align="right"> 13.75 </TD> </TR>
+   </TABLE>
+
+<iframe src="assets/img/m2.html" width=100%, height=600></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Price Simulation: Geometric Brownian Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Recall
+\[P_{ij} = P_{i0} e^{((\mu - \frac{1}{2}) \frac{7}{12} + \sigma N(0,1) \sqrt{\frac{7}{12}})}\]</p>
+
+<ul>
+<li>\(P_{i0}\) is the initial spring price as of March 2014; </li>
+<li>Price generation is based on a 7-month growing season;</li>
+<li>\(P_{ij}\) is the random commodity harvest price generated by a log normal (Brownian) process with: 
+
+<ul>
+<li>drift \(\mu\), </li>
+<li>volatility \(\sigma\), </li>
+<li>random deviate drawn from a normal distribution with zero mean and variance of 1.0;</li>
+</ul></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Price Simulation: Geometric Brownian Model(Cont.)</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Geometric Brownian Model follow this equation:
+\[dS_t = \mu S_t dt + \mu S_t dW_t\]</p>
+
+<ul>
+<li>\(\mu S_t dt\) is <strong>deterministic part</strong>;    \(\mu S_t dW_t\) is <strong>stochastic part</strong>.</li>
+<li>\(dW_t\) is the Brownian motion, which follows random normal distributioin \(N(0,t)\).</li>
+<li>\(\mu\) is <strong>drift</strong>; \(\sigma\) is <strong>diffusion</strong>. \(\sigma\) increases the amount of randomness entering the system.</li>
+</ul></li>
+</ul>
+
+<!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
+
+<!-- Wed Jun 25 00:55:54 2014 -->
+
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> Estimated Mu and Sigma based on historical data in SK </CAPTION>
+<TR> <TH>  </TH> <TH> sigma </TH> <TH> mu </TH>  </TR>
+  <TR> <TD align="right"> Wheat </TD> <TD align="right"> -0.08809182 </TD> <TD align="right"> 0.004406199 </TD> </TR>
+  <TR> <TD align="right"> Oats </TD> <TD align="right"> -0.07589197 </TD> <TD align="right"> 0.004977825 </TD> </TR>
+  <TR> <TD align="right"> Barley </TD> <TD align="right"> -0.06495353 </TD> <TD align="right"> 0.004013233 </TD> </TR>
+  <TR> <TD align="right"> Flax </TD> <TD align="right"> -0.06686761 </TD> <TD align="right"> 0.004150727 </TD> </TR>
+  <TR> <TD align="right"> Canola </TD> <TD align="right"> -0.04872830 </TD> <TD align="right"> 0.003099730 </TD> </TR>
+   </TABLE>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>1000 Crop Price Simulation for SK model</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/graph6.png" alt="plot of chunk graph6"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Conclusion</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>With the cost, yield, and price data, the SK farm model can be structured as follows:</li>
+</ul>
+
+<p>\[Min: \sigma_p^2 = \frac{1}{m} \sum_{j=1}^m ( \pi_j - E[\pi] )^2\]
+\[Subjet \; to: \sum_{i=1}^n x_k = 1668 \; \] 
+\[\sum_{i=1}^n E[R_i] x_i = K \; (2)\]</p>
+
+<ul>
+<li>\(\sigma_p^2\) measures the unstability of farmers&#39; income ; \(\pi\) is the profit for one state</li>
+<li>(2) \(K\) is the target profit</li>
+<li>\(E[R]\) is expect the average profit per acre</li>
+<li>\(m\) is 1000 simulation state</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Conclusion</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The impact of policy can be added to model. For example,whole farm insurance:</li>
+</ul>
+
+<p>\[\sum_{i=1}^n R_{1,i} x_i + Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_1 = 0 \]
+\[\sum_{i=1}^n R_{m,i} x_i + Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_m = 0 \]</p>
+
+<ul>
+<li>\(Z\) is the income coverage level to be protected by insurance such as 70% farmers history income</li>
+<li>\(Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]\) is indemnity payout that farmer can get from insurance</li>
+<li>\(\frac{\sigma}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]\) is permium that farmers need to pay.</li>
+<li>\(\frac{\sigma}{m}\) is subsidy rate. If \(\delta\) = 0.50, the premium is subsidized by 50 percent</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Thank you</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Thank you</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title=''>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Assumption of the Model'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Data Source and Description'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='A Representative Farm in SK'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Soil Zones in SK'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='The Cost of Production: PMP Approach'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Estimate Output Marginal Cost'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Estimate cost function'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Cost, Yield, and Price'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Crop Yield History Data in SK (5 Year Mean)'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Simulation Crop Yield for SK model'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Detrand: time trend and Residual'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Crop Price History Data of SK'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Price Simulation: Geometric Brownian Model'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Price Simulation: Geometric Brownian Model(Cont.)'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='1000 Crop Price Simulation for SK model'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Conclusion'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Conclusion'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Thank you'>
+         20
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="librariesNew/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="librariesNew/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
