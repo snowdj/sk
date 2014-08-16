@@ -244,7 +244,7 @@ cat('<iframe src="assets/img/m1.html" width=100%, height=600></iframe>')
 
 ```{r graph3, comment=NA,echo=FALSE, fig.width=14,message=FALSE}
 library(forecast)
-source("decomp.r")
+source("../decomp.r")
 #
 decomwheat<-decomp(yield[,2], FALSE)
 # set 2 graphs
@@ -438,10 +438,16 @@ $$\sum_{i=1}^n E[R_i] x_i = K \; (2)$$
 $$\sum_{i=1}^n R_{1,i} x_i + Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_1 = 0 $$
 $$\sum_{i=1}^n R_{m,i} x_i + Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_m = 0 $$
 
+
+- There are `m` (1000) constrains. Actually definition of $\pi_i$ profit.
 - $Z$ is the income coverage level to be protected by insurance such as 70% farmers history income
 - $Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]$ is indemnity payout that farmer can get from insurance
 - $\frac{\sigma}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]$ is permium that farmers need to pay.
 - $\frac{\sigma}{m}$ is subsidy rate. If $\delta$ = 0.50, the premium is subsidized by 50 percent
+- $\frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]$ is devided by `m` because the insurance company take the expected value from all possible scinario in this case there are 1000 scinario.
+- $Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]$ is decide by policy, if the payment is triggered, farmer get the payment from government; if not it will be 0, which is decided by the value of $Z - \sum_{i=1}^n R_{m,i} x_i$. 
+
+
 
    
 

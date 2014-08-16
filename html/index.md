@@ -87,7 +87,7 @@ font-style: italic;
     - Land use (**Statistics Canada**)
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:12 2014 -->
+<!-- Fri Aug 15 20:17:02 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> cost </TH> <TH> pr </TH> <TH> yld </TH> <TH> obs </TH>  </TR>
@@ -145,17 +145,8 @@ $$x_k \le x_k^{obs} + 0.01,\; \forall k; \; \; [\lambda_k] \;\; (2)$$
 - Assumption: a __quadratic__ cost function: $c_k = a x_k + b x_k^2$  for SK.  
 $$\hat b_k = 2 \times \frac{\lambda_k}{x_k^{obs}} \; \text{and} \; \hat a_k=c_k^{obs} - 0.5 \times \hat b_k \times x_k^{obs} $$
 
-
-```
-Warning: cannot open file '../shadowad.csv': No such file or directory
-```
-
-```
-Error: cannot open the connection
-```
-
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:12 2014 -->
+<!-- Fri Aug 15 20:17:02 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Based on SK data </CAPTION>
 <TR> <TH> X </TH> <TH> LAMDA </TH> <TH> ALPH </TH> <TH> BETA </TH>  </TR>
@@ -202,27 +193,10 @@ Error: cannot open the connection
 ## Crop Yield History Data in SK (5 Year Mean)
 
 
-
-```
-## Warning: cannot open file '../yield.csv': No such file or directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```
-## Error: undefined columns selected
-```
-
-```
-## Error: undefined columns selected
-```
-
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:12 2014 -->
+<!-- Fri Aug 15 20:17:02 2014 -->
 <TABLE border=1>
-<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanyield </TD> <TD align="right"> 39.06 </TD> <TD align="right"> 79.54 </TD> <TD align="right"> 54.94 </TD> <TD align="right"> 22.04 </TD> <TD align="right"> 32.34 </TD> </TR>
    </TABLE>
 
@@ -263,22 +237,13 @@ Error: cannot open the connection
 ## 1000 Yield Simulation Based on 5 Year Mean and Detrand Standard Deviation
 
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:18 2014 -->
+<!-- Fri Aug 15 20:17:11 2014 -->
 <TABLE border=1>
-<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Flax </TH> <TH> Flax.1 </TH> <TH> Wheat.1 </TH>  </TR>
+<TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> Detrendsd </TD> <TD align="right"> 3.68 </TD> <TD align="right"> 6.42 </TD> <TD align="right"> 6.88 </TD> <TD align="right"> 1.96 </TD> <TD align="right"> 3.51 </TD> </TR>
    </TABLE>
 
 
-
-
-```
-Warning: cannot open file '../simYld.csv': No such file or directory
-```
-
-```
-Error: cannot open the connection
-```
 
 ![plot of chunk graph5](figure/graph5.png) 
 
@@ -294,17 +259,8 @@ Error: cannot open the connection
 ## Crop Price History Data of SK
 
 
-
-```
-## Warning: cannot open file '../price.csv': No such file or directory
-```
-
-```
-## Error: cannot open the connection
-```
-
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:20 2014 -->
+<!-- Fri Aug 15 20:17:14 2014 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Wheat </TH> <TH> Oats </TH> <TH> Barley </TH> <TH> Flax </TH> <TH> Canola </TH>  </TR>
   <TR> <TD align="right"> meanprice </TD> <TD align="right"> 6.59 </TD> <TD align="right"> 2.80 </TD> <TD align="right"> 3.77 </TD> <TD align="right"> 13.37 </TD> <TD align="right"> 13.75 </TD> </TR>
@@ -351,17 +307,8 @@ $$dS_t = \mu S_t dt + \mu S_t dW_t$$
  - $\mu$ is **drift**; $\sigma$ is **diffusion**. $\sigma$ increases the amount of randomness entering the system.
 
 
-
-```
-Warning: cannot open file '../gbmPara.csv': No such file or directory
-```
-
-```
-Error: cannot open the connection
-```
-
 <!-- html table generated in R 3.0.3 by xtable 1.7-3 package -->
-<!-- Thu Aug 14 00:29:21 2014 -->
+<!-- Fri Aug 15 20:17:14 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> Estimated Mu and Sigma based on historical data in SK </CAPTION>
 <TR> <TH>  </TH> <TH> sigma </TH> <TH> mu </TH>  </TR>
@@ -388,15 +335,6 @@ Error: cannot open the connection
 
 ---
 ## 1000 Crop Price Simulation for SK model
-
-
-```
-Warning: cannot open file '../simPr.csv': No such file or directory
-```
-
-```
-Error: cannot open the connection
-```
 
 ![plot of chunk graph6](figure/graph6.png) 
 
@@ -435,10 +373,16 @@ $$\sum_{i=1}^n E[R_i] x_i = K \; (2)$$
 $$\sum_{i=1}^n R_{1,i} x_i + Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_1 = 0 $$
 $$\sum_{i=1}^n R_{m,i} x_i + Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]- \frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0] - \pi_m = 0 $$
 
+
+- There are `m` (1000) constrains. Actually definition of $\pi_i$ profit.
 - $Z$ is the income coverage level to be protected by insurance such as 70% farmers history income
 - $Max[Z - \sum_{i=1}^n R_{1,i} x_i, \; 0]$ is indemnity payout that farmer can get from insurance
 - $\frac{\sigma}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]$ is permium that farmers need to pay.
 - $\frac{\sigma}{m}$ is subsidy rate. If $\delta$ = 0.50, the premium is subsidized by 50 percent
+- $\frac{\delta}{m} \sum_{j=1}^m Max[Z - \sum_{i=1}^n R_{j,i} x_i, \; 0]$ is devided by `m` because the insurance company take the expected value from all possible scinario in this case there are 1000 scinario.
+- $Max[Z - \sum_{i=1}^n R_{m,i} x_i, \; 0]$ is decide by policy, if the payment is triggered, farmer get the payment from government; if not it will be 0, which is decided by the value of $Z - \sum_{i=1}^n R_{m,i} x_i$. 
+
+
 
    
 
